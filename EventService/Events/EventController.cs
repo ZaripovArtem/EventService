@@ -1,12 +1,15 @@
-﻿using EventService.Commands;
-using EventService.Data;
-using EventService.Events.AddEvent;
-using EventService.Events.GetEvent;
-using EventService.Events.UpdateEvent;
+﻿using EventService.Events.GetEvent;
+using Features.Events.AddEvent;
+using Features.Events.AddFreeTicket;
+using Features.Events.DeleteEvent;
+using Features.Events.Domain;
+using Features.Events.GetEvent;
+using Features.Events.GiveTicketToUser;
+using Features.Events.UpdateEvent;
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 
-namespace EventService.Events
+namespace Features.Events
 {
     [ApiController]
     [Route("[controller]")]
@@ -18,7 +21,11 @@ namespace EventService.Events
         {
             _mediator = mediator;
         }
-
+        
+        /// <summary>
+        /// Получение списка всех мероприятий
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         public async Task<IActionResult> GetAllEvents()
         {
@@ -26,6 +33,11 @@ namespace EventService.Events
             return Ok(result);
         }
 
+        /// <summary>
+        /// Добавление мероприятия
+        /// </summary>
+        /// <param name="events">Параметр запроса</param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> AddEvent([FromBody] Event events)
         {
@@ -34,6 +46,12 @@ namespace EventService.Events
             return StatusCode(201);
         }
 
+        /// <summary>
+        /// Изменение мероприятия по его Id
+        /// </summary>
+        /// <param name="id">Id мероприятия</param>
+        /// <param name="events">Параметр запроса</param>
+        /// <returns></returns>
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] Event events)
         {
@@ -42,33 +60,76 @@ namespace EventService.Events
                 return BadRequest("Свойство Id менять запрещено");
             }
 
-            var existEvent = await _mediator.Send(new GetEventByIdQuery(events.Id));
+            await _mediator.Send(new GetEventByIdQuery(events.Id));
 
-            if (existEvent == null)
-            {
-                return BadRequest("Событие не найдено");
-            }
-            else
-            {
-                await _mediator.Send(new UpdateEventCommand(events));
-                return StatusCode(200);
-            }
+            await _mediator.Send(new UpdateEventCommand(events));
+            return StatusCode(200);
         }
 
+        /// <summary>
+        /// Удаление мероприятия по его Id
+        /// </summary>
+        /// <param name="id">Id мероприятия</param>
+        /// <returns></returns>
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
-            var existEvent = await _mediator.Send(new GetEventByIdQuery(id));
-
-            if (existEvent == null)
+            try
+            {
+                await _mediator.Send(new GetEventByIdQuery(id));
+            }
+            catch
             {
                 return BadRequest("Событие не найдено");
             }
-            else
+
+            await _mediator.Send(new DeleteEventCommand(id));
+            return StatusCode(200);
+        }
+
+        /// <summary>
+        /// Добавление бесплатных билетов для определенного мероприятия
+        /// </summary>
+        /// <param name="id">Id мероприятия</param>
+        /// <param name="count">Количество билетов для добавления</param>
+        /// <returns></returns>
+        [HttpPost("/AddFreeTicket")]
+        public async Task<IActionResult> AddFreeTickets(Guid id, int count)
+        {
+            try
             {
-                await _mediator.Send(new DeleteEventCommand(id));
-                return StatusCode(200);
+                await _mediator.Send(new GetEventByIdQuery(id));
             }
+            catch
+            {
+                return BadRequest("Событие не найдено");
+            }
+
+            await _mediator.Send(new AddFreeTicketCommand(id, count));
+            return StatusCode(200);
+        }
+
+        /// <summary>
+        /// Присвоение билета User'у
+        /// </summary>
+        /// <param name="eventId">Id мероприятия</param>
+        /// <param name="userId">Id пользователя</param>
+        /// <param name="ticketId">Id билета</param>
+        /// <returns></returns>
+        [HttpPost("/GiveTicket")]
+        public async Task<IActionResult> GiveTicketToUser(Guid eventId, Guid userId, Guid ticketId)
+        {
+            try
+            {
+                await _mediator.Send(new GetEventByIdQuery(eventId));
+            }
+            catch
+            {
+                return BadRequest("Событие не найдено");
+            }
+
+            await _mediator.Send(new GiveTicketToUserCommand(eventId, ticketId, userId));
+            return StatusCode(200);
         }
     }
 }

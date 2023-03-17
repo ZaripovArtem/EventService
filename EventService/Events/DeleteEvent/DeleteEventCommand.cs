@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace EventService.Commands
+namespace Features.Events.DeleteEvent
 {
-    public record DeleteEventCommand(Guid id) : IRequest;
+    public record DeleteEventCommand(Guid Id) : IRequest;
 }

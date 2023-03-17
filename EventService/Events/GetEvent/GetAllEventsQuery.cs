@@ -1,6 +1,6 @@
-﻿using EventService.Data;
+﻿using Features.Events.Domain;
 using MediatR;
 
-namespace EventService.Events.GetEvent;
+namespace Features.Events.GetEvent;
 
-public record GetAllEventsQuery() : IRequest<IEnumerable<Event>>;
+public record GetAllEventsQuery : IRequest<IEnumerable<Event>>;

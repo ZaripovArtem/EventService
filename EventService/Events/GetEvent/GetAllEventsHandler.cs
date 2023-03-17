@@ -1,7 +1,9 @@
-﻿using EventService.Data;
+﻿using EventService.Events.GetEvent;
+using Features.Events.Data;
+using Features.Events.Domain;
 using MediatR;
 
-namespace EventService.Events.GetEvent
+namespace Features.Events.GetEvent
 {
     public class GetAllEventsHandler : IRequestHandler<GetAllEventsQuery, IEnumerable<Event>>
     {

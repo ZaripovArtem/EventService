@@ -1,4 +1,5 @@
-﻿using EventService.Data;
+﻿using Features.Events.Data;
+using Features.Events.Domain;
 using FluentValidation;
 
 namespace EventService.Events.Validators;
@@ -18,7 +19,7 @@ public class AddEventCommandValidator : AbstractValidator<Event>
     private bool BeAValidPhotoId(Guid? id)
     {
         FakeData fakeData = new();
-        foreach (var item in fakeData._image)
+        foreach (var item in fakeData.Image)
         {
             if (item == id)
             {
@@ -31,7 +32,7 @@ public class AddEventCommandValidator : AbstractValidator<Event>
     private bool BeAValidPlaceId(Guid id)
     {
         FakeData fakeData = new();
-        foreach(var item in fakeData._room) 
+        foreach(var item in fakeData.Room) 
         {
             if(item == id)
             {

@@ -1,8 +1,7 @@
-﻿using EventService.Commands;
-using EventService.Data;
+﻿using Features.Events.Data;
 using MediatR;
 
-namespace EventService.Events.DeleteEvent
+namespace Features.Events.DeleteEvent
 {
     public class DeleteEventHandler : IRequestHandler<DeleteEventCommand>
     {
@@ -14,7 +13,7 @@ namespace EventService.Events.DeleteEvent
 
         public async Task Handle(DeleteEventCommand request, CancellationToken cancellationToken)
         {
-            await _fakeData.DeleteEvent(request.id);
+            await _fakeData.DeleteEvent(request.Id);
         }
     }
 }

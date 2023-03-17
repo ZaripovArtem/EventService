@@ -1,7 +1,9 @@
-﻿using EventService.Data;
+﻿using EventService.Events.GetEvent;
+using Features.Events.Data;
+using Features.Events.Domain;
 using MediatR;
 
-namespace EventService.Events.GetEvent
+namespace Features.Events.GetEvent
 {
     public class GetEventByIdHandler : IRequestHandler<GetEventByIdQuery, Event>
     {
@@ -13,7 +15,7 @@ namespace EventService.Events.GetEvent
 
         public async Task<Event> Handle(GetEventByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _fakeData.GetEventById(request.id);
+            return await _fakeData.GetEventById(request.Id) ?? throw new InvalidOperationException();
         }
     }
 }

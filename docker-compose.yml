@@ -1,0 +1,39 @@
+version: '3.4'
+
+services:
+  features:
+    image: ${DOCKER_REGISTRY-}features
+    build:
+      context: .
+      dockerfile: EventService/Dockerfile
+  identity:       
+    image: bizzpo/identityserver4
+    environment:
+    - Environment=Development
+    - "Identity__Mongo__ConnectionString=mongodb://root:foobar@mongodb:27017/?readPreference=primaryPreferred&appname=identityserver"
+    - Identity__Mongo__Database=Identity
+    - Identity__Redis__ConnectionString=redis
+    - Identity__Redis__Db=-1
+    - Identity__Redis__Prefix=identity
+    container_name: identity
+    depends_on:            
+    - redis            
+    - mongodb        
+    ports:
+    - 5000:80        
+    restart: always    
+  redis:        
+    image: bitnami/redis
+    ports:
+    - 6379:6379
+    environment:            
+    - ALLOW_EMPTY_PASSWORD=yes             
+    restart: always    
+  mongodb:
+    image: mongo:4.2.8
+    environment:            
+    - MONGO_INITDB_ROOT_USERNAME=root            
+    - MONGO_INITDB_ROOT_PASSWORD=foobar        
+    ports:
+    - 27017:27017              
+    restart: always

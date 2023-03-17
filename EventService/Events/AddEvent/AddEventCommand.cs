@@ -1,6 +1,6 @@
-﻿using EventService.Data;
+﻿using Features.Events.Domain;
 using MediatR;
 
-namespace EventService.Events.AddEvent;
+namespace Features.Events.AddEvent;
 
 public record AddEventCommand(Event Event) : IRequest;

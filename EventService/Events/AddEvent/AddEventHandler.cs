@@ -1,7 +1,7 @@
-﻿using EventService.Data;
+﻿using Features.Events.Data;
 using MediatR;
 
-namespace EventService.Events.AddEvent
+namespace Features.Events.AddEvent
 {
     public class AddEventHandler : IRequestHandler<AddEventCommand>
     {

@@ -1,7 +1,7 @@
-﻿using EventService.Data;
+﻿using Features.Events.Data;
 using MediatR;
 
-namespace EventService.Events.UpdateEvent
+namespace Features.Events.UpdateEvent
 {
     public class UpdateEventHandler : IRequestHandler<UpdateEventCommand>
     {
