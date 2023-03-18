@@ -7,6 +7,7 @@ using Features.Events.GetEvent;
 using Features.Events.GiveTicketToUser;
 using Features.Events.UpdateEvent;
 using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Features.Events

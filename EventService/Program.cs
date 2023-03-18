@@ -1,9 +1,8 @@
 using FluentValidation.AspNetCore;
 using System.Reflection;
 using Features.Events.Data;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
+using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,8 +29,25 @@ builder.Services.AddCors(options =>
         });
 });
 
-
 builder.Services.AddSingleton<FakeData>();
+
+builder.Services
+    .AddAuthentication("Bearer")
+    .AddIdentityServerAuthentication(options =>
+    {
+        options.Authority = "http://localhost:5000";
+        options.RequireHttpsMetadata = false;
+        options.ApiName = "api1";
+    });
+
+builder.Services
+    .AddMvcCore()
+    .AddAuthorization()
+    .AddNewtonsoftJson(o =>
+    {
+        o.SerializerSettings.Converters.Add(new StringEnumConverter());
+        o.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
+    });
 
 var app = builder.Build();
 
