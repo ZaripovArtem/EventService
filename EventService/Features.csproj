@@ -11,6 +11,37 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Include="submodule\SC.Internship.Common\.git\config" />
+    <None Include="submodule\SC.Internship.Common\.git\description" />
+    <None Include="submodule\SC.Internship.Common\.git\HEAD" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\applypatch-msg.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\commit-msg.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\fsmonitor-watchman.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\post-update.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\pre-applypatch.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\pre-commit.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\pre-merge-commit.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\pre-push.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\pre-rebase.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\pre-receive.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\prepare-commit-msg.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\push-to-checkout.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\hooks\update.sample" />
+    <None Include="submodule\SC.Internship.Common\.git\index" />
+    <None Include="submodule\SC.Internship.Common\.git\info\exclude" />
+    <None Include="submodule\SC.Internship.Common\.git\logs\HEAD" />
+    <None Include="submodule\SC.Internship.Common\.git\logs\refs\heads\master" />
+    <None Include="submodule\SC.Internship.Common\.git\logs\refs\remotes\origin\HEAD" />
+    <None Include="submodule\SC.Internship.Common\.git\objects\pack\pack-71960cea475f88bb92fb49af7d66a11f7bee0491.idx" />
+    <None Include="submodule\SC.Internship.Common\.git\objects\pack\pack-71960cea475f88bb92fb49af7d66a11f7bee0491.pack" />
+    <None Include="submodule\SC.Internship.Common\.git\packed-refs" />
+    <None Include="submodule\SC.Internship.Common\.git\refs\heads\master" />
+    <None Include="submodule\SC.Internship.Common\.git\refs\remotes\origin\HEAD" />
+    <None Include="submodule\SC.Internship.Common\SC.Internship.Common.sln" />
+    <None Include="submodule\SC.Internship.Common\SC.Internship.Common\SC.Internship.Common.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="FluentValidation" Version="11.5.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
@@ -23,6 +54,11 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.17.2" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.4.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="submodule\SC.Internship.Common\.git\objects\info\" />
+    <Folder Include="submodule\SC.Internship.Common\.git\refs\tags\" />
   </ItemGroup>
 
 </Project>
