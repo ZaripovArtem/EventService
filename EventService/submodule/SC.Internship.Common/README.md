@@ -1,1 +1,0 @@
-# SC.Internship.Common
