@@ -7,7 +7,6 @@ using Features.Events.GetEvent;
 using Features.Events.GiveTicketToUser;
 using Features.Events.UpdateEvent;
 using MediatR;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Features.Events
@@ -43,7 +42,6 @@ namespace Features.Events
         public async Task<IActionResult> AddEvent([FromBody] Event events)
         {
             await _mediator.Send(new AddEventCommand(events));
-
             return StatusCode(201);
         }
 
