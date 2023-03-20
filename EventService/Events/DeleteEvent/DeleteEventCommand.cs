@@ -1,6 +1,8 @@
 ﻿using MediatR;
 
-namespace Features.Events.DeleteEvent
-{
-    public record DeleteEventCommand(Guid Id) : IRequest;
-}
+namespace Features.Events.DeleteEvent;
+
+/// <summary>
+/// Реализация интерфейса команды
+/// </summary>
+public record DeleteEventCommand(Guid Id) : IRequest;

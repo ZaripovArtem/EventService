@@ -1,21 +1,30 @@
-﻿using EventService.Events.GetEvent;
-using Features.Events.Data;
+﻿using Features.Events.Data;
 using Features.Events.Domain;
 using MediatR;
 
 namespace Features.Events.GetEvent
 {
+    /// <summary>
+    /// Реализация обработчика GetAllEventsQuery
+    /// </summary>
     public class GetAllEventsHandler : IRequestHandler<GetAllEventsQuery, IEnumerable<Event>>
     {
-        private readonly FakeData _fakeData;
-        public GetAllEventsHandler(FakeData fakeData)
+        private readonly Repository _data;
+
+        /// <summary>
+        /// Конструктор, для получения данных с MongoDb
+        /// </summary>
+        public GetAllEventsHandler(Repository data)
         {
-            _fakeData = fakeData;
+            _data = data;
         }
 
+        /// <summary>
+        /// Реализация обработчика
+        /// </summary>
         public async Task<IEnumerable<Event>> Handle(GetAllEventsQuery request, CancellationToken cancellationToken)
         {
-            return await _fakeData.GetAllEvents();
+            return await _data.GetAllEvents();
         }
     }
 }

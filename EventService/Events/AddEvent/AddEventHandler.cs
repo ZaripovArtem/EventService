@@ -3,17 +3,27 @@ using MediatR;
 
 namespace Features.Events.AddEvent
 {
+    /// <summary>
+    /// Реализация обработчика AddEventCommand
+    /// </summary>
     public class AddEventHandler : IRequestHandler<AddEventCommand>
     {
-        private readonly FakeData _fakeData;
-        public AddEventHandler(FakeData fakeData)
+        private readonly Repository _data;
+
+        /// <summary>
+        /// Конструктор, для получения данных с MongoDb
+        /// </summary>
+        public AddEventHandler(Repository data)
         {
-            _fakeData = fakeData;
+            _data = data;
         }
 
+        /// <summary>
+        /// Реализация обработчика
+        /// </summary>
         public async Task Handle(AddEventCommand request, CancellationToken cancellationToken)
         {
-            await _fakeData.AddEvent(request.Event);
+            await _data.AddEvent(request.Event);
         }
     }
 }

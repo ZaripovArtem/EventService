@@ -1,8 +1,10 @@
-using FluentValidation.AspNetCore;
-using System.Reflection;
+using Features;
 using Features.Events.Data;
-using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
+using FluentValidation.AspNetCore;
+using IdentityModel.Client;
+using IdentityServer4.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,37 +19,52 @@ builder.Services.AddSwaggerGen(o => {
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
 
+#pragma warning disable CS0618
 builder.Services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
-
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("MyAllowSubdomainPolicy",
-        policy =>
-        {
-            policy.WithOrigins("https://*.example.com")
-                .AllowAnyHeader();
-        });
-});
+#pragma warning restore CS0618
 
 builder.Services.AddSingleton<FakeData>();
+builder.Services.AddSingleton<Repository>();
 
-builder.Services
-    .AddAuthentication("Bearer")
-    .AddIdentityServerAuthentication(options =>
+builder.Services.AddSingleton<ICorsPolicyService>(serviceProvider =>
+    new DefaultCorsPolicyService(serviceProvider.GetService<ILogger<DefaultCorsPolicyService>>())
     {
+        AllowAll = true
+    });
+
+builder.Services.AddIdentityServer()
+    .AddDeveloperSigningCredential() // use a valid signing cert in production
+    .AddInMemoryIdentityResources(Config.GetIdentityResources())
+    .AddInMemoryApiResources(Config.GetApiResources())
+    .AddInMemoryApiScopes(Config.GetApiScopes())
+    .AddInMemoryClients(Config.GetClients());
+
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ =>
+    {
+    }).AddOAuth2Introspection("introspection", options =>
+    {
+        //url of your identityserver
         options.Authority = "http://localhost:5000";
-        options.RequireHttpsMetadata = false;
-        options.ApiName = "api1";
+        //value of the api resource from identityserver
+        options.ClientId = "myapi";
+        //value of the api resource secret from identityserver
+        options.ClientSecret = "hardtoguess";
+        options.DiscoveryPolicy = new DiscoveryPolicy
+        {
+            //set to true if you require https for your identityserver
+            RequireHttps = false
+        };
     });
 
-builder.Services
-    .AddMvcCore()
-    .AddAuthorization()
-    .AddNewtonsoftJson(o =>
-    {
-        o.SerializerSettings.Converters.Add(new StringEnumConverter());
-        o.SerializerSettings.ContractResolver = new CamelCasePropertyNamesContractResolver();
-    });
+// ReSharper disable once VariableHidesOuterVariable
+builder.Services.AddCors(o => o.AddPolicy("LocalPolicy", builder =>
+{
+    builder
+        .AllowAnyOrigin()
+        .AllowAnyMethod()
+        .AllowAnyHeader();
+}));
 
 var app = builder.Build();
 
@@ -55,7 +72,10 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseCors("LocalPolicy");
 }
+
+app.UseIdentityServer();
 
 app.UseHttpsRedirection();
 

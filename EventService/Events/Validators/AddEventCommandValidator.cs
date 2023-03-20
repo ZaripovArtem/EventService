@@ -2,10 +2,16 @@
 using Features.Events.Domain;
 using FluentValidation;
 
-namespace EventService.Events.Validators;
+namespace Features.Events.Validators;
 
+/// <summary>
+/// Validator
+/// </summary>
 public class AddEventCommandValidator : AbstractValidator<Event>
 {
+    /// <summary>
+    /// Конструктор валидатора
+    /// </summary>
     public AddEventCommandValidator()
     {
         RuleFor(x => x.EventName).NotEmpty()
@@ -18,8 +24,8 @@ public class AddEventCommandValidator : AbstractValidator<Event>
 
     private bool BeAValidPhotoId(Guid? id)
     {
-        FakeData fakeData = new();
-        foreach (var item in fakeData.Image)
+        Repository data = new();
+        foreach (var item in data.Image)
         {
             if (item == id)
             {
@@ -31,8 +37,8 @@ public class AddEventCommandValidator : AbstractValidator<Event>
 
     private bool BeAValidPlaceId(Guid id)
     {
-        FakeData fakeData = new();
-        foreach(var item in fakeData.Room) 
+        Repository data = new();
+        foreach (var item in data.Room) 
         {
             if(item == id)
             {

@@ -2,19 +2,37 @@
 
 namespace Features.Events.Data;
 
-public class FakeData
+/// <summary>
+/// Класс-репозиторий для тестовых (локальных) значений
+/// </summary>
+public class FakeData : IRepository
 {
     private List<Event> _events;
+    /// <summary>
+    /// Список Id изображений
+    /// </summary>
     public List<Guid> Image;
+    /// <summary>
+    /// Список Id комнат
+    /// </summary>
     public List<Guid> Room;
+    /// <summary>
+    /// Список билетов
+    /// </summary>
     public List<Ticket> Ticket;
+    /// <summary>
+    /// Список пользователей
+    /// </summary>
     public List<User> User;
+
+    /// <summary>
+    /// Конструктор класса, в котором происходит добавление начальных значений
+    /// </summary>
     public FakeData()
     {
-        // Добавление тестовых данных
         _events = new List<Event> 
         {
-            new() { Id = Guid.NewGuid(), EventName = "qwe", StartEvent = DateTime.Now, EndEvent = DateTime.Now, 
+            new() { Id = Guid.NewGuid(), EventName = "Event1", StartEvent = DateTime.Now, EndEvent = DateTime.Now, 
                 Ticket = new List<Ticket>()
                 {
                     new()
@@ -38,7 +56,7 @@ public class FakeData
         {
             new()
             {
-                Id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa1"), Place = null,
+                Id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa1"), Place = 0,
                 UserId = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa2")
             }
         };
@@ -53,22 +71,37 @@ public class FakeData
         };
     }
 
+    /// <summary>
+    /// Получение информации о мероприятии по его Id
+    /// </summary>
+    /// <param name="id"></param>
+    /// <returns></returns>
     public async Task<Event?> GetEventById(Guid id) 
     {
         return await Task.FromResult(_events.FirstOrDefault(e => e.Id == id));
     }
 
+    /// <summary>
+    /// Получение списка всех мероприятий
+    /// </summary>
+    /// <returns></returns>
     public async Task<IEnumerable<Event>> GetAllEvents()
     {
         return await Task.FromResult(_events);
     }
 
+    /// <summary>
+    /// Добавление мероприятия
+    /// </summary>
     public async Task AddEvent(Event events)
     {
         _events.Add(events);
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Обновление мероприятия
+    /// </summary>
     public async Task UpdateEvent(Event events)
     {
         int index = _events.FindIndex(e => e.Id == events.Id);
@@ -77,6 +110,9 @@ public class FakeData
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Удаление мероприятия
+    /// </summary>
     public async Task DeleteEvent(Guid id)
     {
         int index = _events.FindIndex(e => e.Id == id);
@@ -84,6 +120,12 @@ public class FakeData
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Добавление бесплатных билетов к мероприятию
+    /// </summary>
+    /// <param name="eventId">Id мероприятия</param>
+    /// <param name="count">Количество добавляемых элементов</param>
+    /// <returns></returns>
     public async Task AddFreeTicket(Guid eventId, int count)
     {
         var searchEvent = _events.FindAll(e => e.Id == eventId).FirstOrDefault();
@@ -99,6 +141,13 @@ public class FakeData
         await Task.CompletedTask;
     }
 
+    /// <summary>
+    /// Запись билета на определенного пользователя
+    /// </summary>
+    /// <param name="eventId">Id мероприятия</param>
+    /// <param name="ticketId">Id билета</param>
+    /// <param name="userId">Id пользователя</param>
+    /// <returns></returns>
     public async Task GiveTicketToUser(Guid eventId, Guid ticketId, Guid userId)
     {
         var searchEvent = _events.FindAll(e => e.Id == eventId).FirstOrDefault();

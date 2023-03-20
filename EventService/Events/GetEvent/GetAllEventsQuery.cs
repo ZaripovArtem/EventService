@@ -3,4 +3,7 @@ using MediatR;
 
 namespace Features.Events.GetEvent;
 
-public record GetAllEventsQuery : IRequest<IEnumerable<Event>>;
+/// <summary>
+/// Реализация интерфейса запроса
+/// </summary>
+public record GetAllEventsQuery : IRequest<IEnumerable<Event>>, IRequest<Event>;

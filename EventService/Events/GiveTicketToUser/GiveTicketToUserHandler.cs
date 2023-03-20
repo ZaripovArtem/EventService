@@ -2,16 +2,27 @@
 using MediatR;
 
 namespace Features.Events.GiveTicketToUser;
+
+/// <summary>
+/// Реализация обработчика GiveTicketToUserCommand
+/// </summary>
 public class GiveTicketToUserHandler : IRequestHandler<GiveTicketToUserCommand>
 {
-    private readonly FakeData _fakeData;
-    public GiveTicketToUserHandler(FakeData fakeData)
+    private readonly Repository _data;
+
+    /// <summary>
+    /// Конструктор, для получения данных с MongoDb
+    /// </summary>
+    public GiveTicketToUserHandler(Repository data)
     {
-        _fakeData = fakeData;
+        _data = data;
     }
 
+    /// <summary>
+    /// Реализация обработчика
+    /// </summary>
     public async Task Handle(GiveTicketToUserCommand request, CancellationToken cancellationToken)
     {
-        await _fakeData.GiveTicketToUser(request.EventId, request.TicketId, request.UserId);
+        await _data.GiveTicketToUser(request.EventId, request.TicketId, request.UserId);
     }
 }

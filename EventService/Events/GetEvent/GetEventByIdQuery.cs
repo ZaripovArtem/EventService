@@ -1,6 +1,9 @@
 ﻿using Features.Events.Domain;
 using MediatR;
 
-namespace EventService.Events.GetEvent;
+namespace Features.Events.GetEvent;
 
+/// <summary>
+/// Реализация интерфейса команды
+/// </summary>
 public record GetEventByIdQuery(Guid Id) : IRequest<Event>;
