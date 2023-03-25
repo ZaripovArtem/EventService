@@ -5,7 +5,9 @@
       "commandVersion": "1.0",
       "serviceActions": {
         "features": "StartDebugging",
-        "authserver": "StartDebugging"
+        "authserver": "StartDebugging",
+        "room": "StartDebugging",
+        "image": "StartDebugging"
       }
     }
   }

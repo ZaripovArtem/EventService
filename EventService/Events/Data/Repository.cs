@@ -32,20 +32,14 @@ public class Repository : IRepository
         var dbName = Environment.GetEnvironmentVariable("DB_NAME");
         var connectionString = $"mongodb://{dbHost}:27017/{dbName}";
 
-        var mongoUrl = MongoUrl.Create(connectionString);
-        var mongoClient = new MongoClient(mongoUrl);
-        var database = mongoClient.GetDatabase(mongoUrl.DatabaseName);
+        var mongodbUrl = MongoUrl.Create(connectionString);
+        var mongodbClient = new MongoClient(mongodbUrl);
+        var database = mongodbClient.GetDatabase(mongodbUrl.DatabaseName);
         _events = database.GetCollection<Event>("order");
 
-        Image = new List<Guid>
-        {
-            new("3fa85f64-5717-4562-b3fc-2c963f66afa6")
-        };
+        Image = new List<Guid>(GetImageList().Result.ToList());
 
-        Room = new List<Guid>
-        {
-            new("3fa85f64-5717-4562-b3fc-2c963f66afa6")
-        };
+        Room = new List<Guid>(GetRoomList().Result.ToList());
 
         User = new List<User>
         {
@@ -55,6 +49,8 @@ public class Repository : IRepository
                 NickName = "Nick"
             }
         };
+
+        
     }
 
     /// <summary>
@@ -125,7 +121,8 @@ public class Repository : IRepository
             PhotoId = searchEvent.Result.PhotoId,
             PlaceId = searchEvent.Result.PlaceId,
             Ticket = searchEvent.Result.Ticket,
-            HasPlace = searchEvent.Result.HasPlace
+            HasPlace = searchEvent.Result.HasPlace,
+            Price = searchEvent.Result.Price
         };
 
         if (newEvent.HasPlace == false)
@@ -143,6 +140,7 @@ public class Repository : IRepository
         }
         else
         {
+            // ReSharper disable once ConvertIfStatementToNullCoalescingAssignment лучше читаемость
             if (newEvent.Ticket == null)
             {
                 newEvent.Ticket = new List<Ticket>();
@@ -184,7 +182,8 @@ public class Repository : IRepository
             PhotoId = searchEvent.Result.PhotoId,
             PlaceId = searchEvent.Result.PlaceId,
             Ticket = searchEvent.Result.Ticket,
-            HasPlace = searchEvent.Result.HasPlace
+            HasPlace = searchEvent.Result.HasPlace,
+            Price = searchEvent.Result.Price
         };
 
         newEvent.Ticket?.FindAll(t => t.Id == ticketId)
@@ -193,4 +192,41 @@ public class Repository : IRepository
         await _events.ReplaceOneAsync(filter, newEvent);
     }
 
+    /// <summary>
+    /// Task для получения Id комнат
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<Guid>> GetRoomList()
+    {
+        const string url = "http://host.docker.internal:7002/room";
+
+        HttpClientHandler handler = new();
+        handler.ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+        var httpClient = new HttpClient(handler);
+
+        var list = await httpClient.GetFromJsonAsync<List<Guid>>(url);
+
+        return list!;
+    }
+
+    /// <summary>
+    /// Task для получения Id изображения
+    /// </summary>
+    /// <returns></returns>
+    public async Task<List<Guid>> GetImageList()
+    {
+        const string url = "http://host.docker.internal:7003/image";
+
+        HttpClientHandler handler = new();
+        handler.ServerCertificateCustomValidationCallback =
+            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+        var httpClient = new HttpClient(handler);
+
+        var list = await httpClient.GetFromJsonAsync<List<Guid>>(url);
+
+        return list!;
+    }
 }

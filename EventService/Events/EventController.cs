@@ -6,6 +6,8 @@ using Features.Events.GetEvent;
 using Features.Events.GiveTicketToUser;
 using Features.Events.UpdateEvent;
 using MediatR;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Features.Events
@@ -14,6 +16,7 @@ namespace Features.Events
     /// Контроллер Event
     /// </summary>
     [ApiController]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("[controller]")]
     public class EventController : ControllerBase
     {

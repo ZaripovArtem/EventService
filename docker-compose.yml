@@ -46,3 +46,18 @@ services:
     ports:
     - 27017:27017       
     restart: always
+  room:
+    container_name: room_service
+    image: ${DOCKER_REGISTRY-}room
+    build:
+      context: .
+      dockerfile: Room/Dockerfile
+    ports:
+      - 7002:80
+  image:
+    image: ${DOCKER_REGISTRY-}image
+    build:
+      context: .
+      dockerfile: Image/Dockerfile
+    ports:
+      - 7003:80

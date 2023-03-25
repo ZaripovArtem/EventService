@@ -1,9 +1,9 @@
-using Features;
 using Features.Events.Data;
+using Features.Settings;
 using FluentValidation.AspNetCore;
-using IdentityModel.Client;
 using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,28 +32,19 @@ builder.Services.AddSingleton<ICorsPolicyService>(serviceProvider =>
         AllowAll = true
     });
 
-builder.Services.AddIdentityServer()
-    .AddDeveloperSigningCredential() // use a valid signing cert in production
-    .AddInMemoryIdentityResources(Config.GetIdentityResources())
-    .AddInMemoryApiResources(Config.GetApiResources())
-    .AddInMemoryApiScopes(Config.GetApiScopes())
-    .AddInMemoryClients(Config.GetClients());
-
+builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, _ =>
+    .AddJwtBearer(options =>
     {
-    }).AddOAuth2Introspection("introspection", options =>
-    {
-        //url of your identityserver
-        options.Authority = "http://localhost:5000";
-        //value of the api resource from identityserver
-        options.ClientId = "myapi";
-        //value of the api resource secret from identityserver
-        options.ClientSecret = "hardtoguess";
-        options.DiscoveryPolicy = new DiscoveryPolicy
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            //set to true if you require https for your identityserver
-            RequireHttps = false
+            ValidateIssuer = true,
+            ValidIssuer = AuthOptions.Issuer,
+            ValidateAudience = true,
+            ValidAudience = AuthOptions.Audience,
+            ValidateLifetime = true,
+            IssuerSigningKey = AuthOptions.GetSymmetricSecurityKey(),
+            ValidateIssuerSigningKey = true,
         };
     });
 
@@ -66,6 +57,8 @@ builder.Services.AddCors(o => o.AddPolicy("LocalPolicy", builder =>
         .AllowAnyHeader();
 }));
 
+builder.Services.AddHttpClient();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -74,8 +67,6 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
     app.UseCors("LocalPolicy");
 }
-
-app.UseIdentityServer();
 
 app.UseHttpsRedirection();
 

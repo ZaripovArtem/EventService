@@ -49,4 +49,9 @@ public class Event
     /// </summary>
     [BsonElement("has_place")]
     public bool HasPlace { get; set; }
+    /// <summary>
+    /// Цена билета.
+    /// Если вход свободный - 0
+    /// </summary>
+    public decimal Price { get; set; }
 }
