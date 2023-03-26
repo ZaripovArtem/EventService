@@ -18,7 +18,7 @@ namespace Features.Events
     /// Контроллер Event
     /// </summary>
     [ApiController]
-    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("[controller]")]
     public class EventController : ControllerBase
     {
