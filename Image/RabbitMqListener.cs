@@ -1,0 +1,56 @@
+﻿using System.Text;
+using RabbitMQ.Client;
+using RabbitMQ.Client.Events;
+
+namespace Image;
+
+public class RabbitMqListener : BackgroundService
+{
+    private readonly IConnection _conn;
+    private readonly IModel _channel;
+
+    public RabbitMqListener()
+    {
+        var factory = new ConnectionFactory
+        {
+            // ReSharper disable once StringLiteralTypo имя Host'а
+            HostName = "rabbitmq", Port = 5672,
+            UserName = "guest",
+            Password = "guest"
+        };
+        _conn = factory.CreateConnection();
+        _channel = _conn.CreateModel();
+        _channel.QueueDeclare(queue: "ImageDeleteEvent",
+            durable: false,
+            exclusive: false,
+            autoDelete: false,
+            arguments: null);
+    }
+
+    protected override Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        stoppingToken.ThrowIfCancellationRequested();
+
+        var consumer = new EventingBasicConsumer(_channel);
+        // ReSharper disable once UnusedParameter.Local
+        consumer.Received += (ch, ea) =>
+        {
+            var content = Encoding.UTF8.GetString(ea.Body.ToArray());
+
+            Console.WriteLine($"Получено сообщение: {content}");
+
+            _channel.BasicAck(ea.DeliveryTag, false);
+        };
+
+        _channel.BasicConsume("ImageDeleteEvent", false, consumer);
+
+        return Task.CompletedTask;
+    }
+
+    public override void Dispose()
+    {
+        _channel.Close();
+        _conn.Close();
+        base.Dispose();
+    }
+}

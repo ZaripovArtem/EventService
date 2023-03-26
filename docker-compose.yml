@@ -11,6 +11,9 @@ services:
     environment:
       - DB_HOST=mongodbforservice
       - DB_NAME=feature
+    depends_on:
+      - "rabbitmq"
+
   mongodbforservice:
     image: mongo
     ports:
@@ -61,3 +64,23 @@ services:
       dockerfile: Image/Dockerfile
     ports:
       - 7003:80
+  payment:
+    image: ${DOCKER_REGISTRY-}payment
+    build:
+      context: .
+      dockerfile: Payment/Dockerfile
+    ports:
+      - 7004:80
+  rabbitmq: # login guest:guest
+    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    labels:
+      NAME: "rabbitmq"
+    ports:
+    - "4369:4369"
+    - "5671:5671"
+    - "5672:5672"
+    - "25672:25672"
+    - "15671:15671"
+    - "15672:15672"
+

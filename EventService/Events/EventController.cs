@@ -1,6 +1,8 @@
 ﻿using Features.Events.AddEvent;
 using Features.Events.AddFreeTicket;
 using Features.Events.DeleteEvent;
+using Features.Events.DeleteImage;
+using Features.Events.DeleteSpace;
 using Features.Events.Domain;
 using Features.Events.GetEvent;
 using Features.Events.GiveTicketToUser;
@@ -16,12 +18,11 @@ namespace Features.Events
     /// Контроллер Event
     /// </summary>
     [ApiController]
-    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
+    //[Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("[controller]")]
     public class EventController : ControllerBase
     {
         private readonly IMediator _mediator;
-
         /// <summary>
         /// Конструктор EventController
         /// </summary>
@@ -96,12 +97,12 @@ namespace Features.Events
         }
 
         /// <summary>
-        /// Добавление бесплатных билетов для определенного мероприятия
+        /// Добавление билетов для определенного мероприятия
         /// </summary>
         /// <param name="id">Id мероприятия</param>
         /// <param name="count">Количество билетов для добавления</param>
         /// <returns></returns>
-        [HttpPost("/AddFreeTicket")]
+        [HttpPost("/AddTicket")]
         public async Task<IActionResult> AddFreeTickets(Guid id, int count)
         {
             try
@@ -151,7 +152,7 @@ namespace Features.Events
         {
             var events = await _mediator.Send(new GetEventByIdQuery(eventId));
             string result = "Не найдено";
-            foreach (var ticket in events.Ticket)
+            foreach (var ticket in events.Ticket!)
             {
                 if (ticket.UserId == userId)
                 {
@@ -164,6 +165,30 @@ namespace Features.Events
                 }
             }
             return Ok(result);
+        }
+
+        /// <summary>
+        /// Удаление афиши
+        /// </summary>
+        /// <param name="id">Id афиши</param>
+        /// <returns></returns>
+        [HttpGet("/DeleteImage")]
+        public async Task<IActionResult> DeleteImage(Guid id)
+        {
+            await _mediator.Send(new DeleteImageCommand(id));
+            return StatusCode(200);
+        }
+
+        /// <summary>
+        /// Удаление пространства
+        /// </summary>
+        /// <param name="id">Id пространства</param>
+        /// <returns></returns>
+        [HttpGet("/DeleteSpace")]
+        public async Task<IActionResult> DeleteSpace(Guid id)
+        {
+            await _mediator.Send(new DeleteSpaceCommand(id));
+            return StatusCode(200);
         }
     }
 }

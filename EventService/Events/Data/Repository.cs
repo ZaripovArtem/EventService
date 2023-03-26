@@ -1,4 +1,5 @@
 ﻿using Features.Events.Domain;
+using Features.Settings;
 using MongoDB.Driver;
 
 namespace Features.Events.Data;
@@ -9,6 +10,9 @@ namespace Features.Events.Data;
 public class Repository : IRepository
 {
     private readonly IMongoCollection<Event> _events;
+    private readonly IMessageService _messageService;
+    private readonly IMessageService _imageMessageService;
+    private readonly IMessageService _spaceMessageService;
     /// <summary>
     /// Список Id фотографий
     /// </summary>
@@ -50,7 +54,12 @@ public class Repository : IRepository
             }
         };
 
-        
+        IMessageService messageService = new MessageService();
+        _messageService = messageService;
+        IMessageService imageMessageService = new ImageMessageService();
+        _imageMessageService = imageMessageService;
+        IMessageService spaceMessageService = new SpaceMessageService();
+        _spaceMessageService = spaceMessageService;
     }
 
     /// <summary>
@@ -97,6 +106,7 @@ public class Repository : IRepository
     public async Task DeleteEvent(Guid id)
     {
         var filter = Builders<Event>.Filter.Eq(e => e.Id, id);
+        _messageService.Enqueue($"Удаление события {id}");
         await _events.DeleteOneAsync(filter);
         await Task.CompletedTask;
     }
@@ -186,10 +196,47 @@ public class Repository : IRepository
             Price = searchEvent.Result.Price
         };
 
-        newEvent.Ticket?.FindAll(t => t.Id == ticketId)
-            .ForEach(u => u.UserId = userId);
+        if (newEvent.Price > 0)
+        {
+            const string createUrl = "http://host.docker.internal:7004/payment/create";
+            const string confirmUrl = "http://host.docker.internal:7004/payment/confirm";
+            const string cancelUrl = "http://host.docker.internal:7004/payment/cancel";
 
-        await _events.ReplaceOneAsync(filter, newEvent);
+            HttpClientHandler handler = new();
+            handler.ServerCertificateCustomValidationCallback =
+                HttpClientHandler.DangerousAcceptAnyServerCertificateValidator;
+
+            var httpClient = new HttpClient(handler);
+
+            PaymentOperation? paymentOperation = await httpClient.GetFromJsonAsync<PaymentOperation>(createUrl);
+            
+            Guid? payId = paymentOperation?.Id;
+            
+            newEvent.Ticket?.FindAll(t => t.Id == ticketId)
+                .ForEach(u => u.UserId = userId);
+            await _events.ReplaceOneAsync(filter, newEvent);
+
+            searchEvent = _events.Find(e => e.Id == eventId).FirstOrDefaultAsync();
+            var searchTicket = searchEvent.Result.Ticket?.Find(t => t.UserId == userId);
+
+            if (searchTicket != null)
+            {
+                using var response = await httpClient.PutAsJsonAsync($"{confirmUrl}/{payId}", payId);
+            }
+            else
+            {
+                using var response = await httpClient.PutAsJsonAsync($"{cancelUrl}/{payId}", payId);
+            }
+
+        }
+        else
+        {
+            newEvent.Ticket?.FindAll(t => t.Id == ticketId)
+                .ForEach(u => u.UserId = userId);
+            await _events.ReplaceOneAsync(filter, newEvent);
+        }
+
+        
     }
 
     /// <summary>
@@ -228,5 +275,33 @@ public class Repository : IRepository
         var list = await httpClient.GetFromJsonAsync<List<Guid>>(url);
 
         return list!;
+    }
+
+    private class PaymentOperation
+    {
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local Используется для httpClient
+        public Guid Id { get; set; }
+    }
+
+    /// <summary>
+    /// Удаление пространства
+    /// </summary>
+    /// <param name="id">Id пространства</param>
+    /// <returns></returns>
+    public Task DeleteSpace(Guid id)
+    {
+        _spaceMessageService.Enqueue($"Удаление пространства {id}");
+        return Task.CompletedTask;
+    }
+
+    /// <summary>
+    /// Удаление афиши
+    /// </summary>
+    /// <param name="id">Id афиши</param>
+    /// <returns></returns>
+    public Task DeleteImage(Guid id)
+    {
+        _imageMessageService.Enqueue($"Удаление афиши {id}");
+        return Task.CompletedTask;
     }
 }

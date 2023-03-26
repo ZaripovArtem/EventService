@@ -1,15 +1,10 @@
 var builder = WebApplication.CreateBuilder(args);
 
-var paymentOperations = new List<PaymentOperation>();
-
-// Add services to the container.
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
@@ -18,11 +13,42 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/payment", () => paymentOperations);
+var operations = new List<PaymentOperation>();
 
-app.MapGet("/payment/{id}", (int id) =>
+app.MapGet("/payment", () => operations);
+
+app.MapGet("/payment/create", () =>
 {
+    PaymentOperation paymentOperation = new();
+    paymentOperation.Id = Guid.NewGuid();
+    paymentOperation.DateCreation = DateTime.Now;
+    paymentOperation.State = PaymentState.Hold;
+    operations.Add(paymentOperation);
+    return paymentOperation;
+});
 
+app.MapPut("/payment/confirm/{id}", (Guid id) =>
+{
+    var paymentOperation = operations.FirstOrDefault(p => p.Id == id);
+
+    if (paymentOperation == null) return Results.NotFound(new { message = "Платежная операция не найдена" });
+
+    paymentOperation.DateConfirmation = DateTime.Now;
+    paymentOperation.State = PaymentState.Confirmed;
+    app.Logger.LogInformation("Http PUT запрос на подтверждение платежной операции");
+    return Results.Json(paymentOperation);
+});
+
+app.MapPut("/payment/cancel/{id}", (Guid id) =>
+{
+    var paymentOperation = operations.FirstOrDefault(p => p.Id == id);
+
+    if (paymentOperation == null) return Results.NotFound(new { message = "Платежная операция не найдена" });
+
+    paymentOperation.DateCancellation = DateTime.Now;
+    paymentOperation.State = PaymentState.Cancelled;
+    app.Logger.LogInformation("Http PUT запрос на отмену платежной операции");
+    return Results.Json(paymentOperation);
 });
 
 app.Run();
@@ -38,7 +64,7 @@ public class PaymentOperation
 
 public enum PaymentState
 {
-    hold,
-    confirmed,
-    canceled
+    Hold,
+    Confirmed,
+    Cancelled
 }

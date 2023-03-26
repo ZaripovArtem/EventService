@@ -5,6 +5,7 @@ using IdentityServer4.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
+using Polly;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -57,7 +58,15 @@ builder.Services.AddCors(o => o.AddPolicy("LocalPolicy", builder =>
         .AllowAnyHeader();
 }));
 
-builder.Services.AddHttpClient();
+var httpRetryPolicy = Policy.HandleResult<HttpResponseMessage>(r => !r.IsSuccessStatusCode)
+    .CircuitBreakerAsync(2, TimeSpan.FromSeconds(2));
+
+builder.Services.AddHttpClient()
+    .AddPolicyRegistry().Add("retry", httpRetryPolicy);
+
+builder.Services.AddSingleton<IMessageService, MessageService>();
+builder.Services.AddHostedService<RabbitMqListener>();
+builder.Services.AddSingleton<IMessageService, ImageMessageService>();
 
 var app = builder.Build();
 
