@@ -9,6 +9,8 @@
 
 ![image](https://user-images.githubusercontent.com/78857901/227791797-e3fdfd63-92d1-4261-9188-695a7c0634e2.png)
 
+## Авторизация
+
 Получение JWT токена происходит по результату выполнения данного Get запроса:
 
 ![image](https://user-images.githubusercontent.com/78857901/227717603-c8ea0e51-0846-4876-9bbc-c9d715c63f99.png)
