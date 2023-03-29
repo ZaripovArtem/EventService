@@ -5,6 +5,18 @@
 
 Для запуска требуется установленный docker с поддержкой Linux контейнеров.
 
+Для запуска сервиса следует проделать следующие шаги:
+
+Склонировать репозиторий:
+
+Code -- Open with Visual Studio (если используете Visual Studio);
+
+Зайти в проект;
+
+Запустить с использованием Docker Compose
+
+![image](https://user-images.githubusercontent.com/78857901/228610389-af4e89b2-1f03-4c0c-80ac-a4b8b76356c2.png)
+
 При запуске открывается страница Swagger:
 
 ![image](https://user-images.githubusercontent.com/78857901/227791797-e3fdfd63-92d1-4261-9188-695a7c0634e2.png)
