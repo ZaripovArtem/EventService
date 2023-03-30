@@ -9,7 +9,7 @@ namespace Features.Settings;
 /// </summary>
 public class RabbitMqListener : BackgroundService
 {
-    private readonly IConnection _conn;
+    private readonly IConnection? _conn;
     private readonly IModel _channel;
 
     /// <summary>
@@ -17,14 +17,30 @@ public class RabbitMqListener : BackgroundService
     /// </summary>
     public RabbitMqListener()
     {
+
         var factory = new ConnectionFactory
         {
             // ReSharper disable once StringLiteralTypo имя Host'а
-            HostName = "rabbitmq", Port = 5672,
+            HostName = "rabbitmq",
+            Port = 5672,
             UserName = "guest",
             Password = "guest"
         };
-        _conn = factory.CreateConnection();
+
+        do
+        {
+            try
+            {
+                _conn = factory.CreateConnection();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                Thread.Sleep(1000);
+                _conn = null;
+            }
+        } while (_conn == null);
+
         _channel = _conn.CreateModel();
         _channel.QueueDeclare(queue: "EventDeleteEvent",
             durable: false,
@@ -62,7 +78,7 @@ public class RabbitMqListener : BackgroundService
     public override void Dispose()
     {
         _channel.Close();
-        _conn.Close();
+        _conn?.Close();
         base.Dispose();
     }
 }

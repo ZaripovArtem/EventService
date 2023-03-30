@@ -7,7 +7,7 @@ namespace Features.Events.Data;
 /// </summary>
 public class FakeData : IRepository
 {
-    private List<Event> _events;
+    private readonly List<Event> _events;
     /// <summary>
     /// Список Id изображений
     /// </summary>
@@ -32,7 +32,7 @@ public class FakeData : IRepository
     {
         _events = new List<Event> 
         {
-            new() { Id = Guid.NewGuid(), EventName = "Event1", StartEvent = DateTime.Now, EndEvent = DateTime.Now, 
+            new() { Id = Guid.NewGuid(), EventName = "Event1", StartEvent = DateTimeOffset.Now, EndEvent = DateTimeOffset.Now, 
                 Ticket = new List<Ticket>()
                 {
                     new()

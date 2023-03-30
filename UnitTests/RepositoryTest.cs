@@ -16,8 +16,8 @@ namespace UnitTests
             {
                 Id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa1"),
                 EventName = "BuyBusiness",
-                StartEvent = DateTime.Now,
-                EndEvent = DateTime.Now,
+                StartEvent = DateTimeOffset.Now,
+                EndEvent = DateTimeOffset.Now,
                 Ticket = new List<Ticket>()
                 {
                     new()
@@ -42,8 +42,8 @@ namespace UnitTests
             {
                 Id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa1"),
                 EventName = "BuyBusinessInMiami",
-                StartEvent = DateTime.Now,
-                EndEvent = DateTime.Now,
+                StartEvent = DateTimeOffset.Now,
+                EndEvent = DateTimeOffset.Now,
                 Ticket = new List<Ticket>()
                 {
                     new()
@@ -69,8 +69,8 @@ namespace UnitTests
             {
                 Id = new Guid("3fa85f64-5717-4562-b3fc-2c963f66afa6"),
                 EventName = "TestToDelete",
-                StartEvent = DateTime.Now,
-                EndEvent = DateTime.Now,
+                StartEvent = DateTimeOffset.Now,
+                EndEvent = DateTimeOffset.Now,
                 Ticket = new List<Ticket>()
                 {
                     new()

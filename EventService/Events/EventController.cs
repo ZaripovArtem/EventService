@@ -61,7 +61,7 @@ namespace Features.Events
         /// <param name="id">Id мероприятия</param>
         /// <param name="events">Параметр запроса</param>
         /// <returns></returns>
-        [HttpPut("{id}")]
+        [HttpPut("{id:guid}")]
         public async Task<IActionResult> UpdateEvent(Guid id, [FromBody] Event events)
         {
             if(id != events.Id)
@@ -80,7 +80,7 @@ namespace Features.Events
         /// </summary>
         /// <param name="id">Id мероприятия</param>
         /// <returns></returns>
-        [HttpDelete("{id}")]
+        [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteEvent(Guid id)
         {
             try
@@ -102,7 +102,7 @@ namespace Features.Events
         /// <param name="id">Id мероприятия</param>
         /// <param name="count">Количество билетов для добавления</param>
         /// <returns></returns>
-        [HttpPost("/AddTicket")]
+        [HttpPost("{id:guid}/Ticket")]
         public async Task<IActionResult> AddFreeTickets(Guid id, int count)
         {
             try
@@ -125,7 +125,7 @@ namespace Features.Events
         /// <param name="userId">Id пользователя</param>
         /// <param name="ticketId">Id билета</param>
         /// <returns></returns>
-        [HttpPost("/GiveTicket")]
+        [HttpPut("{eventId}/Ticket/{ticketId:guid}/User")]
         public async Task<IActionResult> GiveTicketToUser(Guid eventId, Guid userId, Guid ticketId)
         {
             try
@@ -147,23 +147,19 @@ namespace Features.Events
         /// <param name="userId">Id пользователя</param>
         /// <param name="eventId">Id мероприятия</param>
         /// <returns></returns>
-        [HttpGet("/CheckTicket")]
+        [HttpGet("{eventId:guid}/User/{userId:guid}")]
         public async Task<IActionResult> CheckTicket(Guid userId, Guid eventId)
         {
             var events = await _mediator.Send(new GetEventByIdQuery(eventId));
-            string result = "Не найдено";
-            foreach (var ticket in events.Ticket!)
+            var result = "Не найдено";
+
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract Проверка на мероприятие
+            if (events == null) return Ok(result);
+            foreach (var ticket in events.Ticket!.Where(ticket => ticket.UserId == userId))
             {
-                if (ticket.UserId == userId)
-                {
-                    result = ticket.Place.ToString();
-                    // ReSharper disable once ConditionIsAlwaysTrueOrFalseAccordingToNullableAPIContract Дополнительная проверка
-                    if (result == null)
-                    {
-                        result = "0";
-                    }
-                }
+                result = ticket.Place.ToString();
             }
+
             return Ok(result);
         }
 
@@ -172,7 +168,7 @@ namespace Features.Events
         /// </summary>
         /// <param name="id">Id афиши</param>
         /// <returns></returns>
-        [HttpGet("/DeleteImage")]
+        [HttpDelete("/Image/{id:guid}")]
         public async Task<IActionResult> DeleteImage(Guid id)
         {
             await _mediator.Send(new DeleteImageCommand(id));
@@ -184,7 +180,7 @@ namespace Features.Events
         /// </summary>
         /// <param name="id">Id пространства</param>
         /// <returns></returns>
-        [HttpGet("/DeleteSpace")]
+        [HttpDelete("/Space/{id:guid}")]
         public async Task<IActionResult> DeleteSpace(Guid id)
         {
             await _mediator.Send(new DeleteSpaceCommand(id));

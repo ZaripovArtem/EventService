@@ -6,6 +6,7 @@ namespace Features.Events.DeleteSpace;
 /// <summary>
 /// Реализация обработчика DeleteSpaceCommand
 /// </summary>
+// ReSharper disable once UnusedMember.Global Обработчик
 public class DeleteSpaceHandler : IRequestHandler<DeleteSpaceCommand>
 {
     private readonly Repository _data;
@@ -19,10 +20,11 @@ public class DeleteSpaceHandler : IRequestHandler<DeleteSpaceCommand>
     }
 
     /// <summary>
-    /// Реализация обработчика
+    /// Удаление пространства
     /// </summary>
-    public async Task Handle(DeleteSpaceCommand request, CancellationToken cancellationToken)
+    public Task Handle(DeleteSpaceCommand request, CancellationToken cancellationToken)
     {
-        await _data.DeleteSpace(request.Id);
+        _data.SpaceMessageService.Enqueue($"Удаление пространства {request.Id}");
+        return Task.CompletedTask;
     }
 }

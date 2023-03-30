@@ -38,4 +38,6 @@ app.MapGet("/image", () =>
     return imageList;
 });
 
+app.UseHttpLogging();
+
 app.Run();

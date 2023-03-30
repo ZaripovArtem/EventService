@@ -1,11 +1,13 @@
 using Features.Events.Data;
+using Features.Events.Validators;
 using Features.Settings;
 using FluentValidation.AspNetCore;
 using IdentityServer4.Services;
+using MediatR;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using System.Reflection;
 using Polly;
+using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,10 +21,12 @@ builder.Services.AddSwaggerGen(o => {
 });
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
-
 #pragma warning disable CS0618
 builder.Services.AddFluentValidation(cfg => cfg.RegisterValidatorsFromAssembly(Assembly.GetExecutingAssembly()));
 #pragma warning restore CS0618
+
+builder.Services.AddTransient(typeof(IPipelineBehavior<,>), typeof(ValidationBehavior<,>));
+builder.Services.AddTransient<ExceptionHandlingMiddleware>();
 
 builder.Services.AddSingleton<FakeData>();
 builder.Services.AddSingleton<Repository>();
@@ -68,6 +72,8 @@ builder.Services.AddSingleton<IMessageService, MessageService>();
 builder.Services.AddHostedService<RabbitMqListener>();
 builder.Services.AddSingleton<IMessageService, ImageMessageService>();
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -77,12 +83,17 @@ if (app.Environment.IsDevelopment())
     app.UseCors("LocalPolicy");
 }
 
+app.UseMiddleware<ExceptionHandlingMiddleware>();
+
 app.UseHttpsRedirection();
+
+app.UseHttpLogging();
 
 app.UseAuthorization();
 
 app.UseAuthentication();
 
 app.MapControllers();
+
 
 app.Run();

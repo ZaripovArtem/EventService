@@ -6,6 +6,7 @@ namespace Features.Events.DeleteImage
     /// <summary>
     /// Реализация обработчика DeleteImageCommand
     /// </summary>
+    // ReSharper disable once UnusedMember.Global Обработчик
     public class DeleteImageHandler : IRequestHandler<DeleteImageCommand>
     {
         private readonly Repository _data;
@@ -19,11 +20,12 @@ namespace Features.Events.DeleteImage
         }
 
         /// <summary>
-        /// Реализация обработчика
+        /// Удаление афиши
         /// </summary>
-        public async Task Handle(DeleteImageCommand request, CancellationToken cancellationToken)
+        public Task Handle(DeleteImageCommand request, CancellationToken cancellationToken)
         {
-            await _data.DeleteImage(request.Id);
+            _data.ImageMessageService.Enqueue($"Удаление афиши {request.Id}");
+            return Task.CompletedTask;
         }
     }
 }

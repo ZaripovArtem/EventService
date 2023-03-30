@@ -6,6 +6,7 @@ namespace Features.Events.AddEvent
     /// <summary>
     /// Реализация обработчика AddEventCommand
     /// </summary>
+    // ReSharper disable once UnusedMember.Global Обработчик
     public class AddEventHandler : IRequestHandler<AddEventCommand>
     {
         private readonly Repository _data;
@@ -19,11 +20,11 @@ namespace Features.Events.AddEvent
         }
 
         /// <summary>
-        /// Реализация обработчика
+        /// Получение списка всех мероприятий
         /// </summary>
         public async Task Handle(AddEventCommand request, CancellationToken cancellationToken)
         {
-            await _data.AddEvent(request.Event);
+            await _data.Events.InsertOneAsync(request.Event, cancellationToken: cancellationToken);
         }
     }
 }
