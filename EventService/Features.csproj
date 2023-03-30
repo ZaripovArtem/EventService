@@ -42,6 +42,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.0" />
     <PackageReference Include="FluentValidation" Version="11.5.1" />
     <PackageReference Include="FluentValidation.AspNetCore" Version="11.2.2" />
     <PackageReference Include="IdentityServer4" Version="4.1.2" />
@@ -64,6 +65,10 @@
   <ItemGroup>
     <Folder Include="submodule\SC.Internship.Common\.git\objects\info\" />
     <Folder Include="submodule\SC.Internship.Common\.git\refs\tags\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Payment\Payment.csproj" />
   </ItemGroup>
 
 </Project>

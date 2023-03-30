@@ -7,6 +7,7 @@ namespace Features.Events.Validators;
 /// <summary>
 /// Validator
 /// </summary>
+// ReSharper disable once UnusedMember.Global Валидатор
 public class AddEventCommandValidator : AbstractValidator<Event>
 {
     /// <summary>

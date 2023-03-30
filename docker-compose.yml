@@ -1,6 +1,19 @@
 version: '3.4'
 
 services:
+  rabbitmq: # login guest:guest
+    image: rabbitmq:3-management
+    hostname: "rabbitmq"
+    labels:
+      NAME: "rabbitmq"
+    ports:
+    - "4369:4369"
+    - "5671:5671"
+    - "5672:5672"
+    - "25672:25672"
+    - "15671:15671"
+    - "15672:15672"
+
   features:
     image: ${DOCKER_REGISTRY-}features
     build:
@@ -18,6 +31,7 @@ services:
     image: mongo
     ports:
       - 7001:27017
+
   identity:       
     image: bizzpo/identityserver4
     environment:
@@ -33,14 +47,16 @@ services:
     - mongodb        
     ports:
     - 5000:80        
-    restart: always    
+    restart: always  
+    
   redis:        
     image: bitnami/redis
     ports:
     - 6379:6379
     environment:            
     - ALLOW_EMPTY_PASSWORD=yes             
-    restart: always    
+    restart: always  
+    
   mongodb:
     image: mongo:4.2.8
     environment:            
@@ -49,6 +65,7 @@ services:
     ports:
     - 27017:27017       
     restart: always
+
   room:
     container_name: room_service
     image: ${DOCKER_REGISTRY-}room
@@ -57,6 +74,7 @@ services:
       dockerfile: Room/Dockerfile
     ports:
       - 7002:80
+
   image:
     image: ${DOCKER_REGISTRY-}image
     build:
@@ -64,6 +82,9 @@ services:
       dockerfile: Image/Dockerfile
     ports:
       - 7003:80
+    depends_on:
+      - "rabbitmq"
+
   payment:
     image: ${DOCKER_REGISTRY-}payment
     build:
@@ -71,16 +92,5 @@ services:
       dockerfile: Payment/Dockerfile
     ports:
       - 7004:80
-  rabbitmq: # login guest:guest
-    image: rabbitmq:3-management
-    hostname: "rabbitmq"
-    labels:
-      NAME: "rabbitmq"
-    ports:
-    - "4369:4369"
-    - "5671:5671"
-    - "5672:5672"
-    - "25672:25672"
-    - "15671:15671"
-    - "15672:15672"
-
+    depends_on:
+      - "rabbitmq"

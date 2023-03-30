@@ -1,12 +1,14 @@
 ﻿using Features.Events.Data;
 using Features.Events.Domain;
 using MediatR;
+using MongoDB.Driver;
 
 namespace Features.Events.GetEvent
 {
     /// <summary>
     /// Реализация обработчика GetAllEventsQuery
     /// </summary>
+    // ReSharper disable once UnusedMember.Global Обработчик
     public class GetAllEventsHandler : IRequestHandler<GetAllEventsQuery, IEnumerable<Event>>
     {
         private readonly Repository _data;
@@ -20,11 +22,11 @@ namespace Features.Events.GetEvent
         }
 
         /// <summary>
-        /// Реализация обработчика
+        /// Получение списка всех мероприятий
         /// </summary>
         public async Task<IEnumerable<Event>> Handle(GetAllEventsQuery request, CancellationToken cancellationToken)
         {
-            return await _data.GetAllEvents();
+            return await _data.Events.Find(Builders<Event>.Filter.Empty).ToListAsync(cancellationToken: cancellationToken);
         }
     }
 }

@@ -1,12 +1,14 @@
 ﻿using Features.Events.Data;
 using Features.Events.Domain;
 using MediatR;
+using MongoDB.Driver;
 
 namespace Features.Events.GetEvent
 {
     /// <summary>
     /// Реализация обработчика GetEventByIdQuery
     /// </summary>
+    // ReSharper disable once UnusedMember.Global Обработчик
     public class GetEventByIdHandler : IRequestHandler<GetEventByIdQuery, Event>
     {
         private readonly Repository _data;
@@ -20,11 +22,11 @@ namespace Features.Events.GetEvent
         }
 
         /// <summary>
-        /// Реализация обработчика
+        /// Получение мероприятия по его Id
         /// </summary>
         public async Task<Event> Handle(GetEventByIdQuery request, CancellationToken cancellationToken)
         {
-            return await _data.GetEventById(request.Id) ?? throw new InvalidOperationException();
+            return await _data.Events.Find(Builders<Event>.Filter.Eq(e => e.Id, request.Id)).FirstOrDefaultAsync(cancellationToken: cancellationToken);
         }
     }
 }

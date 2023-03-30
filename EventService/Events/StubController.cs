@@ -21,10 +21,10 @@ namespace Features.Events
         /// </summary>
         /// <param name="nickname">Nickname пользователя</param>
         /// <returns></returns>
-        [HttpGet("/GetToken/{nickname}")]
+        [HttpGet("/Token/{nickname}")]
         public string GetJwtToken(string nickname)
         {
-            var claims = new List<Claim> { new Claim(ClaimTypes.Name, nickname) };
+            var claims = new List<Claim> { new (ClaimTypes.Name, nickname) };
             var jwt = new JwtSecurityToken(
                 issuer: AuthOptions.Issuer,
                 audience: AuthOptions.Audience,
@@ -45,7 +45,5 @@ namespace Features.Events
         {
             return Task.FromResult<IActionResult>(Ok());
         }
-
-        
     }
 }

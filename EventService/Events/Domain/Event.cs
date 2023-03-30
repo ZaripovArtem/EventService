@@ -18,12 +18,12 @@ public class Event
     /// Начало мероприятия
     /// </summary>
     [BsonElement("start_event"), BsonRepresentation(BsonType.DateTime)]
-    public DateTime StartEvent { get; set; }
+    public DateTimeOffset StartEvent { get; set; }
     /// <summary>
     /// Окончание мероприятия
     /// </summary>
     [BsonElement("end_event"), BsonRepresentation(BsonType.DateTime)]
-    public DateTime EndEvent { get; set; }
+    public DateTimeOffset EndEvent { get; set; }
     /// <summary>
     /// Название мероприятия
     /// </summary>

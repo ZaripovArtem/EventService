@@ -38,5 +38,7 @@ app.MapGet("/room", () =>
     return roomList;
 });
 
+app.UseHttpLogging();
+
 app.Run();
 
