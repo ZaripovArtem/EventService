@@ -19,13 +19,13 @@ Code -- Open with Visual Studio (если используете Visual Studio);
 
 При запуске открывается страница Swagger:
 
-![image](https://user-images.githubusercontent.com/78857901/227791797-e3fdfd63-92d1-4261-9188-695a7c0634e2.png)
+![image](https://user-images.githubusercontent.com/78857901/229216146-21d1951f-74dd-402c-a2a8-da6bbdf00fd9.png)
 
 ## Авторизация
 
 Получение JWT токена происходит по результату выполнения данного Get запроса:
 
-![image](https://user-images.githubusercontent.com/78857901/227717603-c8ea0e51-0846-4876-9bbc-c9d715c63f99.png)
+![image](https://user-images.githubusercontent.com/78857901/229216298-6545a1b3-4486-4122-a159-7ed7b149f0bd.png)
 
 Пример Header'a для авторизации в Postman
 
