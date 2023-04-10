@@ -1,5 +1,9 @@
 # REST API сервис мероприятий.
 
+## Используемые технологии
+
+.NET 7, MongoDb, RabbitMq, Docker, MediatR, FluentValidation
+
 ## Запуск сервиса
 Проект запускается через docker-compose.
 
